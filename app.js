@@ -27,34 +27,38 @@ app.get('/', (req, res) => {
   });
 });
 
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
-var count = 0;
-var $ipsConnected = [];
-
-http.listen(port, () => {
-  console.log(`Our server is running on port ${port}`);
-});
-
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+const userSocketIdMap = new Map();
 
 io.on('connection', function (socket) {
-  console.log(socket);
-  var $ipAddress = socket.handshake.address;
-  if (!$ipsConnected.hasOwnProperty($ipAddress)) {
-    $ipsConnected[$ipAddress] = 1;
-    count++;
-    socket.emit('counter', { count: count });
+  console.log("socket.id:", socket.id);
+  let userName = socket.handshake.query.userName;
+  if (!userSocketIdMap.has(userName)) {
+    userSocketIdMap.set(userName, new Set([socket.id]));
+  } else {
+    userSocketIdMap.get(userName).add(socket.id);
   }
-  console.log("client is connected");
-  console.log(count);
+  let onlineUsers = Array.from(userSocketIdMap.keys());
+  console.log(onlineUsers);
+  socket.broadcast.emit('Online-users', { Online: onlineUsers });
   /* Disconnect socket */
   socket.on('disconnect', function () {
-    if ($ipsConnected.hasOwnProperty($ipAddress)) {
-      delete $ipsConnected[$ipAddress];
-      count--;
-      socket.emit('counter', { count: count });
+    if (userSocketIdMap.has(userName)) {
+      let userSocketIdSet = userSocketIdMap.get(userName);
+      userSocketIdSet.delete(socket.id);
+      if (userSocketIdSet.size == 0) {
+        userSocketIdMap.delete(userName);
+      }
+      let onlineUsers = Array.from(userSocketIdMap.keys());
+      console.log(onlineUsers);
+      socket.broadcast.emit('Online-users', { Online: onlineUsers });
     }
   });
 });
 
-module.exports.app = app;
+server.listen(port, () => {
+  console.log(`Our server is running on port ${port}`);
+});
+
+module.exports.app = server;
