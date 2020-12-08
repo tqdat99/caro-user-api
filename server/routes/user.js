@@ -1,6 +1,7 @@
 const express = require('express');
 const { getUsers, getUserByUsername, signUp, signIn } = require('../controllers/user');
 var passport = require('passport');
+
 require('../passport/passport')(passport);
 
 const userRoutes = express.Router();
