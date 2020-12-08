@@ -1,25 +1,14 @@
-// import dependencies
-// import express from 'express';
-// import bodyParser from 'body-parser';
-// import mongoose from 'mongoose';
-// import logger from 'morgan';
-// import userRoutes from './server/routes/user.js';
 const express = require('express');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const userRoutes = require('./server/routes/user');
-const http = require('http')
 const cors = require('cors')
-var passport = require('passport');
-var server = require('http').Server(express);
-var io = require('socket.io')(server);
-var count = 0;
-var $ipsConnected = [];
+const passport = require('passport');
 require('./server/db/db');
 
-server.listen(3000);
 // set up dependencies
 const app = express();
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger('dev'));
@@ -37,11 +26,19 @@ app.get('/', (req, res) => {
     message: 'Welcome to Project with Nodejs Express and MongoDB',
   });
 });
-app.listen(port, () => {
+
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+var count = 0;
+var $ipsConnected = [];
+
+http.listen(port, () => {
   console.log(`Our server is running on port ${port}`);
 });
 
+
 io.on('connection', function (socket) {
+  console.log(socket);
   var $ipAddress = socket.handshake.address;
   if (!$ipsConnected.hasOwnProperty($ipAddress)) {
     $ipsConnected[$ipAddress] = 1;
