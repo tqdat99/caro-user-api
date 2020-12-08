@@ -1,22 +1,46 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
-  <title>Real time online activity monitor example with node.js and WebSocket</title>
-  <script type="text/javascript" src="https://code.jquery.com/jquery-1.4.2.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+
+   <title>Node JS - Get Real time online users counter using socket io example</title>
+
+   <script type="text/javascript" src="https://code.jquery.com/jquery-1.4.2.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+
+
 </head>
 
 <body>
-  <h1>socket NodeJS Live Conter : <span id="socket_io_counter"></span></h1>
-  <b>socket io real time online users example</p>
-    <script type="text/javascript">
-      //socket io number of clients in room
-      var socket = io.connect('http://localhost:8001');
-      socket.on('socket_io_counter', function (response) {
-        $("#socket_io_counter").text(response.flags);
-      });
-    </script>
+
+
+
+<h1>Conter : <span id="counter"></span></h1>
+
+
+
+<script type="text/javascript">
+
+
+
+  var socket = io.connect('https://caro-admin-api.herokuapp.com');
+
+
+
+  socket.on('counter', function (data) {
+    console.log()
+    $("#counter").text(data.count);
+
+  });
+
+
+
+</script>
+
+
+
 </body>
 
 </html>
