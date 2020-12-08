@@ -6,7 +6,7 @@ const userRoutes = express.Router();
 
 userRoutes.post('/register', signUp);
 userRoutes.post('/login', signIn);
-userRoutes.post('/test', getUsers);
+userRoutes.get('/test', getUsers);
 userRoutes.get('/', passport.authenticate('jwt', { session: false }), getUsers);
 userRoutes.post('/signup', signUp);
 userRoutes.post('/signin', signIn);
